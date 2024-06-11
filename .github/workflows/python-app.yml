@@ -1,0 +1,68 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: Python application
+
+on:
+  push:
+    branches: ["main"]
+    tags:
+      - "v*"
+
+# permissions:
+#   contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          architecture: "x64"
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run Pyinstaller
+        run: |
+          pyinstaller -F normal_search.py
+          pyinstaller -F ranking_search.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Windows_normal_search
+          path: dist/normal_search.exe
+        with:
+          name: Windows_ranking_search
+          path: dist/ranking_search.exe
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ver-${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{steps.create_release.outputs.upload_url}}
+          asset_path: dist/normal_search.exe
+          asset_name: normal_search.exe
+          asset_content_type: application/zip
+        with:
+          upload_url: ${{steps.create_release.outputs.upload_url}}
+          asset_path: dist/ranking_search.exe
+          asset_name: ranking_search.exe
+          asset_content_type: application/zip
