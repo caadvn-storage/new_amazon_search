@@ -22,8 +22,12 @@ today_string = datetime.now().strftime("%Y%m%d")
 time_string = datetime.now().strftime("%H")
 today_folder = os.path.join(LOCAL_PATH, today_string)
 time_folder = os.path.join(today_folder, time_string + "時")
+path = (pd.read_excel(os.path.join(
+        LOCAL_PATH, "crawling_list.xlsx"), engine='openpyxl', sheet_name="KEYWORD"))['path'][0]
+sub_move_folder = os.path.join(path, today_string, time_string + "時")
 os.makedirs(today_folder, exist_ok=True)
 os.makedirs(time_folder, exist_ok=True)
+os.makedirs(sub_move_folder, exist_ok=True)
 
 
 def read_script(filename):
@@ -100,6 +104,10 @@ def get_data(lit_keys: list):
         df_final = pd.concat(lst_df, ignore_index=True)
         df_final.to_csv(os.path.join(time_folder, f"{today_string}_{time_string}時_{keys}.csv"),
                         encoding='utf-16', sep="\t", index=False)
+        if sub_move_folder:
+            shutil.copy2(os.path.join(time_folder, f"{today_string}_{time_string}時_{keys}.csv"), os.path.join(sub_move_folder,f"{today_string}_{time_string}時_{keys}.csv"))
+        else:
+            f"{sub_move_folder}：存在しない"
     browsers.quit()
 
 
