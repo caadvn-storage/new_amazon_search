@@ -1,0 +1,76 @@
+
+var result = [['Rank', 'Type', 'Product name','ASIN', 'Review_Rate','Number of reviews']];
+var searchResultNodes = document.evaluate('.//div[@data-asin][@data-avar]', document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+var node = searchResultNodes.iterateNext();
+
+if (node){
+  var count = 1;
+  while (node) {
+    var asin = node.getAttribute('data-asin');
+    if (asin === "" || asin === null) {
+          node = searchResultNodes.iterateNext();
+          continue;
+      }
+    var tittle = '';
+    var tittleNode = document.evaluate(".//span[@class='a-truncate-full a-offscreen']", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (tittleNode){
+        tittle = tittleNode.textContent;
+    }
+
+    var sponsor = "SB";
+
+    var rating = '';
+      var ratingNode = document.evaluate(".//span[@class='a-icon-alt']", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+      
+      if (ratingNode){
+          var match = ratingNode.textContent.match(/(\d+(\.\d+)?)/g);
+          if (match != null) {
+            rating = match[1];
+      }
+          
+      }
+      var review = '';
+      var reviewNode = document.evaluate(".//span[@data-rt]", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+      if (reviewNode){
+          review = reviewNode.textContent;
+      }
+
+      result.push(["", sponsor, tittle, asin, rating , review])
+      count++;
+      node = searchResultNodes.iterateNext();
+      };
+}else{
+  var searchResultNodes = document.evaluate('//div[@data-asin][@data-asinadattributesprops]', document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+  var node = searchResultNodes.iterateNext();
+
+  var count = 1;
+
+  while (node) {
+    var item = node.getAttribute('data-asinadattributesprops');
+    if (!item) {
+      node = searchResultNodes.iterateNext();
+      continue;
+    }
+
+    const dict_info = JSON.parse(item);
+    const asin = dict_info.asin;
+
+    if (asin === "" || asin === null) {
+      node = searchResultNodes.iterateNext();
+      continue;
+    }
+
+    const sponsor = "SB";
+    const title = dict_info.productComponents.title;
+    const rating = JSON.parse(dict_info.productComponents.customerReviews).rating.replace("5つ星のうち", "");
+    const review = JSON.parse(dict_info.productComponents.customerReviews).count;
+
+    result.push(["", sponsor, title, asin, rating , review]);
+    count++;
+    node = searchResultNodes.iterateNext();
+  };
+
+};
+
+var resultString = JSON.stringify(result);
+return resultString;

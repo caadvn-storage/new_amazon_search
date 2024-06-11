@@ -1,0 +1,55 @@
+var result = [['Rank', 'Type', 'Product name','ASIN', 'Review_Rate','Number of reviews']];
+var searchResultNodes = document.evaluate("//div[@id='gridItemRoot']", document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+var node = searchResultNodes.iterateNext();
+
+var count = 1;
+while (node) {
+
+    var asin = node.getAttribute('id');
+    if (asin === "gridItemRoot"){
+	var asin = 	document.evaluate(".//div[@data-asin]", node, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null).iterateNext().getAttribute("data-asin");
+    }
+
+    if (asin === "" || asin === null) {
+        node = searchResultNodes.iterateNext();
+        continue;
+    }
+
+    var sponsor = "";
+    var sponsorNode = document.evaluate(".//span[text()='スポンサー']", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (sponsorNode) {
+        sponsor = 'SP';
+    }else{
+        sponsor = ''; 
+    }
+
+    var tittle = "";
+    var tittleNode = document.evaluate(".//img", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (tittleNode) {
+        tittle = tittleNode.getAttribute('alt');
+    }
+
+    var rating = '';
+    var ratingNode = document.evaluate(".//span[@class='a-icon-alt']", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (ratingNode){
+        rating = ratingNode.textContent.replace("5つ星のうち", "");
+    }
+    var review = '';
+    var reviewNode = document.evaluate(".//span[@class='a-size-small']", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (reviewNode){
+        review = reviewNode.textContent;
+    }
+    var rank = '';
+    var rankNode = document.evaluate(".//span[@class='zg-bdg-text']", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (rankNode) {
+        rank = rankNode.textContent;
+    }
+
+
+    result.push([rank, sponsor, tittle, asin, rating , review]);
+    count++;
+
+    node = searchResultNodes.iterateNext();
+}
+var resultString = JSON.stringify(result);
+return resultString;

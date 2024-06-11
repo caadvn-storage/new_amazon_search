@@ -1,0 +1,38 @@
+var result = [['Rank', 'Type', 'Product name','ASIN', 'Review_Rate','Number of reviews']];
+var searchResultNodes = document.evaluate('.//div[@class="a-carousel-row-inner"]//li[@class="a-carousel-card"]//div[@data-asin]', document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+var node = searchResultNodes.iterateNext();
+var count = 1;
+    while (node) {
+    var asin = node.getAttribute('data-asin');
+    if (asin === "" || asin === null) {
+        node = searchResultNodes.iterateNext();
+        continue;
+    }
+    var sponsor = "SP";
+    var tittle = '';
+    var tittleNode = document.evaluate(".//span[@class='a-size-base-plus a-color-base a-text-normal']", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (tittleNode){
+        tittle = tittleNode.textContent;
+    }
+    var rating = '';
+    var ratingNode = document.evaluate(".//span[@class='a-icon-alt']", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (ratingNode){
+        rating = ratingNode.textContent.replace("5つ星のうち", "");
+    }
+    var review = '';
+    var reviewNode = document.evaluate(".//span[@class='a-size-base s-underline-text']", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+    if (reviewNode){
+        review = reviewNode.textContent;
+    }
+
+    
+    if (count > 5){
+        result.push(["", sponsor, tittle, asin, rating , review])
+    }else{
+        result.push([String(count+10), sponsor, tittle, asin, rating , review])
+    }
+    count++;
+    node = searchResultNodes.iterateNext();
+    };
+var resultString = JSON.stringify(result);
+return resultString;

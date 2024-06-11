@@ -1,0 +1,4 @@
+18:24 - WDM - ====== WebDriver manager ======
+18:24 - WDM - Get LATEST chromedriver version for google-chrome
+18:24 - WDM - Get LATEST chromedriver version for google-chrome
+18:24 - WDM - Driver [C:\Users\DT0038\.wdm\drivers\chromedriver\win64\124.0.6367.91\chromedriver-win32/chromedriver.exe] found in cache

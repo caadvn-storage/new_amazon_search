@@ -1,0 +1,70 @@
+function scrollToBottom() {
+    window.scrollTo(0, document.body.scrollHeight);
+};
+
+function wait(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+async function collectData() {
+    var result = [['順位', 'メニュー', '商品名','ASIN', 'レビューの数','レビューの数字']];
+    var searchResultNodes = document.evaluate("//div[@id='gridItemRoot']", document, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+    var node = searchResultNodes.iterateNext();
+
+    var count = 1;
+    while (node) {
+
+        var asin = node.getAttribute('id');
+
+        if (asin === "" || asin === null) {
+            node = searchResultNodes.iterateNext();
+            continue;
+        }
+
+        var sponsor = "";
+        var sponsorNode = document.evaluate(".//span[text()='スポンサー']", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        if (sponsorNode) {
+            sponsor = 'SP';
+        }else{
+            sponsor = 'Organic'; 
+        }
+
+        var tittle = "";
+        var tittleNode = document.evaluate(".//img", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        if (tittleNode) {
+            tittle = tittleNode.getAttribute('alt');
+        }
+
+        var rating = '';
+        var ratingNode = document.evaluate(".//span[@class='a-icon-alt']", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        if (ratingNode){
+            rating = ratingNode.textContent.replace("5つ星のうち", "");
+        }
+        var review = '';
+        var reviewNode = document.evaluate(".//span[@class='a-size-small']", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        if (reviewNode){
+            review = reviewNode.textContent;
+        }
+        var rank = '';
+        rankNode = document.evaluate(".//span[@class='zg-bdg-text']", node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        if (reviewNode){
+            rank = rankNode.textContent;
+        }
+
+
+        result.push([rank, sponsor, tittle, asin, rating , review]);
+        count++;
+
+        node = searchResultNodes.iterateNext();
+    }
+    return result; // chưa return kết quả nên thêm dòng này vào cuối hàm collectData
+};
+
+async function main() {
+    scrollToBottom();
+    await wait(3000); 
+    const result = await collectData();  // gán kết quả hàm collectData vào biến result
+    console.log(result); // In kết quả ra console
+};
+
+return JSON.parse(main());
