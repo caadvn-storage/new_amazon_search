@@ -32,7 +32,6 @@ jobs:
       - name: Run Pyinstaller
         run: |
           pyinstaller -F normal_search.py
-          pyinstaller -F ranking_search.py
       - uses: actions/upload-artifact@v4
         with:
           name: Windows_normal_search
