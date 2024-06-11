@@ -34,8 +34,8 @@ jobs:
           pyinstaller -F normal_search.py
       - uses: actions/upload-artifact@v4
         with:
-          name: normal_search
-          path: dist/normal_search.exe
+          name: ranking_sreach
+          path: dist/ranking_sreach.exe
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -53,6 +53,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{steps.create_release.outputs.upload_url}}
-          asset_path: dist/normal_search.exe
-          asset_name: normal_search.exe
+          asset_path: dist/ranking_sreach.exe
+          asset_name: ranking_sreach.exe
           asset_content_type: application/zip
