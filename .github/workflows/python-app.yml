@@ -37,10 +37,6 @@ jobs:
         with:
           name: Windows_normal_search
           path: dist/normal_search.exe
-        with:
-          name: Windows_ranking_search
-          path: dist/ranking_search.exe
-
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -60,9 +56,4 @@ jobs:
           upload_url: ${{steps.create_release.outputs.upload_url}}
           asset_path: dist/normal_search.exe
           asset_name: normal_search.exe
-          asset_content_type: application/zip
-        with:
-          upload_url: ${{steps.create_release.outputs.upload_url}}
-          asset_path: dist/ranking_search.exe
-          asset_name: ranking_search.exe
           asset_content_type: application/zip
